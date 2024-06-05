@@ -31,7 +31,7 @@ float my_stof(const std::string& str) {
     char* endptr;
     const char* cstr = str.c_str();
     float result = strtof(cstr, &endptr);
-    if (*endptr != '\0')
+    if (((*endptr) + 1) != '\0' && *endptr != 'f')
         throw std::invalid_argument("stof");
     return result;
 }
@@ -62,7 +62,9 @@ void ScalarConverter::convert(const std::string &literal)
 		{
 			int i = my_stoi(literal);
 			std::cout << "its an int" << std::endl;
-			if (i < 32 || i > 126)
+			if (i > 127 || i < 0)
+					std::cout << "char: impossible" << std::endl;
+			else if (i < 32 || i > 126)
 				std::cout << "char: Non displayable" << std::endl;
 			else
 				std::cout << "char: " << static_cast<char>(i) << std::endl;
@@ -79,17 +81,22 @@ void ScalarConverter::convert(const std::string &literal)
 			float f = my_stof(literal);
 			std::cout << "its a float" << std::endl;
 			if (f == std::numeric_limits<float>::infinity() || f == -std::numeric_limits<float>::infinity() || std::isnan(f))
-				std::cout << "char: impossible" << std::endl << "int: impossible" << std::endl << "float: " << f << std::endl << "double: " << static_cast<double>(f) << std::endl;
+				std::cout << "char: impossible" << std::endl << "int: impossible" << std::endl;
 			else
 			{
-				if (f < 32 || f > 126)
+				if (f > 127 || f < 0)
+					std::cout << "char: impossible" << std::endl;
+				else if (f < 32 || f > 126)
 					std::cout << "char: Non displayable" << std::endl;
 				else
 					std::cout << "char: " << static_cast<char>(static_cast<int>(f)) << std::endl;
-				std::cout << "int: " << static_cast<int>(f) << std::endl;
-			std::cout << "float: " << f << "f" << std::endl;
-			std::cout << "double: " << static_cast<double>(f) << std::endl;
+				if (f > std::numeric_limits<int>::max() || f < std::numeric_limits<int>::min())
+					std::cout << "int: impossible" << std::endl;
+				else
+					std::cout << "int: " << static_cast<int>(f) << std::endl;
 			}
+			std::cout << "float: " << std::setprecision(7) << f << "f" << std::endl;
+			std::cout << "double: " << std::setprecision(17) << static_cast<double>(f) << std::endl;
 			return;
 		}
 		catch (std::exception &e)
@@ -103,14 +110,20 @@ void ScalarConverter::convert(const std::string &literal)
 				std::cout << "char: impossible" << std::endl << "int: impossible" << std::endl;
 			else
 			{
-				if (d < 32 || d > 126)
+				if (d > 127 || d < 0)
+					std::cout << "char: impossible" << std::endl;
+				else if (d < 32 || d > 126)
 					std::cout << "char: Non displayable" << std::endl;
 				else
 					std::cout << "char: " << static_cast<char>(static_cast<int>(d)) << std::endl;
-				std::cout << "int: " << static_cast<int>(d) << std::endl;
+				if (d > std::numeric_limits<int>::max() || d < std::numeric_limits<int>::min())
+					std::cout << "int: impossible" << std::endl;
+				else
+					std::cout << "int: " << static_cast<int>(d) << std::endl;
 			}
-			std::cout << "float: " << static_cast<float>(d) << "f" << std::endl;
-			std::cout << "double: " << d << std::endl;
+			std::cout << "float: " << std::setprecision(7) << static_cast<float>(d) << "f" << std::endl;
+			std::cout << "double: " << std::setprecision(17) << d << std::endl;
+			return;
 		}
 		catch (std::exception &e)
 		{
